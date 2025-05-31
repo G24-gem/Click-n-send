@@ -1,12 +1,12 @@
 {
-  "name": "Your-base-name",
+  "name": "Click-n-send",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "A full-blown realtime click chat app",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "startDev": "nodemon server.js"
+    "start": "node app.js",
+    "startDev": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
