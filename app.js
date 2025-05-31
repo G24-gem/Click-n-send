@@ -1,63 +1,58 @@
 const WebSocket = require("ws");
 const express = require("express");
 const app = express();
-const fs = require("fs")
-const server = new WebSocket.Server({port: 5555})
+const fs = require("fs");
+const fsPromises = require("fs").promises;
+const path = require("path");
 
-
-const path = require('path');
-
-// Serve static files from the "public" directory
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Render index.html at the root URL
+// Root route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-
-
-if(!fs.existsSync("./chathouse")){
-   fs.mkdirSync("./chathouse")
+// Create chathouse folder if not exists
+if (!fs.existsSync("./chathouse")) {
+  fs.mkdirSync("./chathouse");
 }
 
+// WebSocket server
+const server = new WebSocket.Server({ port: 5555 });
+
 server.on("connection", (ws) => {
-	ws.on("message", (message) => {
-		var msg = message.toString("utf8");
-		var content = msg.split(",")[0];
-		var filename = msg.split(",")[1];
-        
-        fs.writeFile(`./chathouse/${filename}`, content, (err) => {
-           if(err) console.log(err)
-        })
-       
-       
+  ws.on("message", (message) => {
+    const msg = message.toString("utf8");
+    const [content, filename] = msg.split(",");
 
-		console.log(message.toString("utf8"), content) 
-	});
-     async function send() {
-      var con = await fs.readdir("./chathouse", (err, files) => {
-          const filesArr = files;
-          filesCon = [];
-          filesArr.forEach((file) => {
-            filesCon.push(fs.readFileSync(`./chathouse/${file}`, "utf8"))
-          })
-          console.log(filesCon)
-       
-          function timed() {
-          
-          	ws.send(filesCon.join("|"))
+    fs.writeFile(path.join("chathouse", filename), content, (err) => {
+      if (err) console.error(err);
+    });
 
+    console.log(msg, content);
+  });
+
+  async function send() {
+    try {
+      const files = await fsPromises.readdir("./chathouse");
+      const filesCon = await Promise.all(
+        files.map(file => fsPromises.readFile(path.join("chathouse", file), "utf8"))
+      );
+
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(filesCon.join("|"));
       }
-      timed()
-      });
-       	
-     }
-     
-     send();
-     setInterval(send, 10)
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
+  send();
+  setInterval(send, 1000); // every 1 second
+});
 
-})
-
-app.listen(3330 || process.env.PORT, () => console.log(sever is up and running));
+// Start Express server
+app.listen(3330 || process.env.PORT, () => {
+  console.log("server is up and running");
+});
