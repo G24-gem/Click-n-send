@@ -4,6 +4,20 @@ const app = express();
 const fs = require("fs")
 const server = new WebSocket.Server({port: 5555})
 
+const express = require('express');
+const path = require('path');
+const app = express();
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Render index.html at the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+
+
 if(!fs.existsSync("./chathouse")){
    fs.mkdirSync("./chathouse")
 }
@@ -46,3 +60,5 @@ server.on("connection", (ws) => {
 
 
 })
+
+app.listen(3330 || process.env.PORT, () => console.log(sever is up and running));
