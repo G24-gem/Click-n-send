@@ -1,9 +1,15 @@
 const WebSocket = require("ws");
 const express = require("express");
-const app = express();
+const http = require("http");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
 const path = require("path");
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+const PORT = process.env.PORT || 3000;
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -18,10 +24,8 @@ if (!fs.existsSync("./chathouse")) {
   fs.mkdirSync("./chathouse");
 }
 
-// WebSocket server
-const server = new WebSocket.Server({ port: 5555 });
-
-server.on("connection", (ws) => {
+// WebSocket logic
+wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     const msg = message.toString("utf8");
     const [content, filename] = msg.split(",");
@@ -30,7 +34,7 @@ server.on("connection", (ws) => {
       if (err) console.error(err);
     });
 
-    console.log(msg, content);
+    console.log("Received:", msg);
   });
 
   async function send() {
@@ -49,10 +53,10 @@ server.on("connection", (ws) => {
   }
 
   send();
-  setInterval(send, 1000); // every 1 second
+  setInterval(send, 1000);
 });
 
-// Start Express server
-app.listen(3330 || process.env.PORT, () => {
-  console.log("server is up and running");
+// Start combined HTTP + WebSocket server
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
