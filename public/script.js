@@ -1,53 +1,74 @@
+
 const inputElem = document.querySelector(".input");
 const submitElem = document.querySelector(".post-btn");
 const chatCanvas = document.querySelector(".post-container");
 const ws = new WebSocket(`wss://${location.host}`);
 
-let timestamp = new Date().toISOString().replace(/:/g, "-");
-let msgArr = [];
+var timestamp = new Date().toISOString().replace(/:/g, "-");
+var msgArr = [];
 
-function delFun(arr, index) {
-    for (let i = index; i < arr.length - 1; i++) {
-        arr[i] = arr[i + 1];
-    }
-    if (arr.length > 0) arr.length--;
-    return arr;
+function delFun(Arr, index) {
+        const ind = index;
+        var Arr = Arr;
+
+        for (var i = index; i < Arr.length-1; i++) {
+                Arr[i] = Arr[i+1];
+        }
+        if (!(Arr.length == 0)) {Arr.length--};
+        return Arr;
 }
 
-// WebSocket message listener
+
+
+
+//listens for server's message
 ws.onmessage = (message) => {
-    chatCanvas.innerHTML = "";
-    const msgArrLocal = message.data.split("|");
-    msgArrLocal.forEach((item) => {
-        const div = document.createElement("div");
+        chatCanvas.innerHTML = "";
+        var msgArrLocal  = message.data.split("|");
+         msgArrLocal.forEach( (item) => {
+                var div = document.createElement("div");
         div.id = "mess";
         div.innerHTML = item;
         chatCanvas.appendChild(div);
-    });
+      })
+}
+ chatCanvas.scrollTop = chatCanvas.scrollHeight;
 
-    // scroll to bottom on new message
-    chatCanvas.scrollTop = chatCanvas.scrollHeight;
-};
+//sends the receive message
+function sendMessageEvent() {
+        inputElem.addEventListener("keydown", (e) => {
 
-// Keydown event listener
-inputElem.addEventListener("keydown", (e) => {
-    const key = e.key;
+             var msg = "";
+             function sendMessage() {
+                     if(e.key.length == 1) {
+               alert("it was triggered")
+ msgArr.push(e.key);
+                              msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
+                              ws.send(msg);  
+alert("working");
+                   }
+             }
 
-    if (key.length === 1) {
-        // Standard character
-        msgArr.push(key);
-        const msg = [`${msgArr.join("")}`, timestamp];
-        ws.send(msg.join("|"));
-        alert("it was triggered");
-    } else if (key.toLowerCase() === "backspace") {
-        // Backspace handling
-        msgArr = delFun(msgArr, msgArr.length - 1);
-        const msg = [`${msgArr.join("")}`, timestamp];
-        ws.send(msg.join("|"));
-    } else if (key.toLowerCase() === "enter") {
-        // Reset input field and message array
-        inputElem.value = "";
-        msgArr = [];
-        timestamp = new Date().toISOString().replace(/:/g, "-");
-    }
-});
+
+          var specialKeys = "backspace" || "enter";
+          var keyLower = e.key.toLowerCase();
+
+             sendMessage();
+
+            if (keyLower == specialKeys) {
+                    if (specialKeys == "backspace") { 
+                             msgArr = delFun(msgArr, msgArr.length)
+                 var msg1 = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
+                             console.log(msgArr)
+                     ws.send(msg1)
+                    }
+            }
+
+        })
+}
+
+sendMessageEvent()
+submitElem.addEventListener("click", () => {
+   inputElem.value = "";
+   timestamp = new Date().toISOString().replace(/:/g, "-");
+}) 
