@@ -43,6 +43,7 @@ function sendMessageEvent() {
                               msgArr.push(e.key);
                               msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
                               ws.send(msg);  
+alert("working");
                    }
              }
 
