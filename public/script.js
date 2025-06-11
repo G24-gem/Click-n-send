@@ -39,21 +39,20 @@ function sendMessageEvent() {
         inputElem.addEventListener("keydown", (e) => {
 
              var msg = "";
-             function sendMessage() {
-                     if(e.key.length == 1) {
+             var key = e.key;
+                     if(key.length == 1) {
                alert("it was triggered")
  msgArr.push(e.key);
                               msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
                               ws.send(msg);  
 alert("working");
                    }
-             }
+             
 
 
           var specialKeys = "backspace" || "enter";
           var keyLower = e.key.toLowerCase();
 
-             sendMessage();
 
             if (keyLower == specialKeys) {
                     if (specialKeys == "backspace") { 
