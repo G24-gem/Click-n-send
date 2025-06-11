@@ -1,3 +1,4 @@
+alert("script.js is ready");
 const inputElem = document.querySelector(".input");
 const submitElem = document.querySelector(".post-btn");
 const chatCanvas = document.querySelector(".post-container");
