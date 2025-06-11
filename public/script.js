@@ -23,6 +23,7 @@ function delFun(Arr, index) {
 
 //listens for server's message
 ws.onmessage = (message) => {
+alert("received message");
         chatCanvas.innerHTML = "";
         var msgArrLocal  = message.data.split("|");
          msgArrLocal.forEach( (item) => {
@@ -37,10 +38,10 @@ ws.onmessage = (message) => {
 //sends the receive message
 function sendMessageEvent() {
         inputElem.addEventListener("keydown", (e) => {
-
+alert(e.key)
              var msg = "";
              var key = e.key;
-                     if(key.length == 1) {
+                     if(key.length === 1) {
                alert("it was triggered")
  msgArr.push(e.key);
                               msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
