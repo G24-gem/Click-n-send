@@ -40,9 +40,9 @@ function sendMessageEvent() {
 
              var msg = "";
              function sendMessage() {
-alert("it was triggered")
                      if(e.key.length == 1) {
-                              msgArr.push(e.key);
+               alert("it was triggered")
+ msgArr.push(e.key);
                               msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
                               ws.send(msg);  
 alert("working");
