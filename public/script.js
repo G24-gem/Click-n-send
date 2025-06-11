@@ -1,7 +1,8 @@
 const inputElem = document.querySelector(".input");
 const submitElem = document.querySelector(".post-btn");
 const chatCanvas = document.querySelector(".post-container");
-const ws = new WebSocket("ws://localhost:5555");
+const ws = new WebSocket(`wss://${location.host}`);
+
 var timestamp = new Date().toISOString().replace(/:/g, "-");
 var msgArr = [];
 
