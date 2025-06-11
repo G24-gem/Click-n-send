@@ -23,7 +23,6 @@ function delFun(Arr, index) {
 
 //listens for server's message
 ws.onmessage = (message) => {
-alert("received message");
         chatCanvas.innerHTML = "";
         var msgArrLocal  = message.data.split("|");
          msgArrLocal.forEach( (item) => {
