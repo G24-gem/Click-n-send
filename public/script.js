@@ -37,15 +37,14 @@ ws.onmessage = (message) => {
 //sends the receive message
 function sendMessageEvent() {
         inputElem.addEventListener("keydown", (e) => {
-alert(e.key)
              var msg = "";
              var key = e.key;
                      if(key.length === 1) {
-               alert("it was triggered")
+            
  msgArr.push(e.key);
                               msg = [`${msgArr.join().replace(/,/g, "")}`, timestamp];
                               ws.send(msg);  
-alert("working");
+
                    }
              
 
