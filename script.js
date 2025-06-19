@@ -34,7 +34,7 @@ ws.onmessage = (message) => {
 
 //sends the receive message
 function sendMessageEvent() {
-	inputElem.addEventListener("keydown", (e) => {
+	inputElem.addEventListener("input", (e) => {
 	     var msg = "";
 	     function sendMessage() {
 	     	if(e.key.length == 1) {
