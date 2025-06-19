@@ -7,7 +7,8 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ server }) /*Deployment*/
+//const wss = new WebSocket.Server({port:7700}); /*Testing*/
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,7 +29,8 @@ if (!fs.existsSync("./chathouse")) {
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     const msg = message.toString("utf8");
-    const [content, filename] = msg.split(",");
+    const {messageContent: content, time: filename} = JSON.parse(msg);
+    console.log(content)
 
     fs.writeFile(path.join("chathouse", filename), content, (err) => {
       if (err) console.error(err);
