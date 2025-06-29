@@ -28,16 +28,21 @@ if (!fs.existsSync("./chathouse")) {
 // WebSocket logic
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
-    const msg = message.toString("utf8");
-    const {messageContent: content, time: filename} = JSON.parse(msg);
-    console.log(content)
+  const msg = message.toString("utf8");
+  try {
+    const { messageContent: content, time: filename } = JSON.parse(msg);
+    console.log(content);
 
     fs.writeFile(path.join("chathouse", filename), content, (err) => {
       if (err) console.error(err);
     });
 
     console.log("Received:", msg);
-  });
+  } catch (err) {
+    console.error("Invalid message:", msg);
+  }
+});
+
 
   async function send() {
     try {
