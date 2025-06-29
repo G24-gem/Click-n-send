@@ -7,18 +7,8 @@ const ws = new WebSocket(`wss://${location.host}`); // Deployment
 
 let timestamp = new Date().toISOString().replace(/:/g, "-");
 let lastValue = "";
-let msgArr = [];
 
-// Message Deletion Helper
-function delFun(Arr, index) {
-  for (let i = index; i < Arr.length - 1; i++) {
-    Arr[i] = Arr[i + 1];
-  }
-  if (Arr.length > 0) Arr.length--;
-  return Arr;
-}
-
-// Incoming message handler
+// Incoming messages from server
 ws.onmessage = (message) => {
   chatCanvas.innerHTML = "";
   const msgArrLocal = message.data.split("|");
@@ -31,22 +21,24 @@ ws.onmessage = (message) => {
   chatCanvas.scrollTop = chatCanvas.scrollHeight;
 };
 
-// Poll input value every 300ms
+// 🧠 Function to send message
+function sendMessage(value) {
+  const msg = JSON.stringify({ messageContent: value, time: timestamp });
+  ws.send(msg);
+}
+
+// 🔁 Poll input changes every 300ms
 setInterval(() => {
   const currentValue = inputElem.value;
   if (currentValue !== lastValue) {
     lastValue = currentValue;
-    msgArr = currentValue.split("");
-
-    const msg = JSON.stringify({ messageContent: currentValue, time: timestamp });
-    ws.send(msg);
-
-    // Optional visual trigger: simulate click if needed
-    submitElem.click(); // only if you want to simulate activity
+    sendMessage(currentValue);
   }
 }, 300);
 
-// Click event (clears input + resets timestamp)
+// ✅ Clear input on click
 submitElem.addEventListener("click", () => {
+  inputElem.value = "";
+  lastValue = ""; // reset tracker
   timestamp = new Date().toISOString().replace(/:/g, "-");
 });
