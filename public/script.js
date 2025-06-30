@@ -14,14 +14,14 @@ let lastValue = "";
 ws.onmessage = (message) => {
   const data = message.data;
 
-  // Handle online count message
+  // 🟡 Handle online user count
   if (data.startsWith("USERS:")) {
     const count = data.split(":")[1];
     onlineCountElem.textContent = `Online: ${count}`;
     return;
   }
 
-  // Normal message render
+  // 🟢 Handle chat messages
   chatCanvas.innerHTML = "";
   const msgArrLocal = data.split("|");
   msgArrLocal.forEach((item) => {
@@ -32,6 +32,7 @@ ws.onmessage = (message) => {
   });
   chatCanvas.scrollTop = chatCanvas.scrollHeight;
 };
+
 
 
 // 🧠 Function to send message
