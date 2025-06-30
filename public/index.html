@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <title>Typy</title>
-<!-- Inside <head> -->
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
-
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="./style.css">
+    <title>Typy</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 <body>
 
+<div id="online-count" style="position: fixed; top: 10px; right: 15px; background: #222; color: #fff; padding: 8px 12px; border-radius: 8px; font-family: 'Segoe UI'; font-size: 14px; z-index: 1000;">
+    Online: 0
+</div>
+
 <div class="main-container">
-        <div class="content-container">
-<br>
-                <h6>Welcome to Typy</h6><br>
-                <div class="post-container">
-
-                </div><br>
-                <input type="" name="" placeholder=<input type="text" name="message" placeholder="Type your message..." class="input">
-<!-- Use <button> instead of <a> for actions -->
-<button class="post-btn">Post</button>
-
-        </div>
+    <div class="content-container">
+        <br>
+        <h6>Welcome to Typy</h6><br>
+        <div class="post-container"></div><br>
+        <input type="text" name="message" placeholder="Type your message..." class="input">
+        <button class="post-btn">Post</button>
+    </div>
 </div>
 
 <script src="script.js"></script>
