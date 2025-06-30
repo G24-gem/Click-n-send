@@ -7,8 +7,7 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server }) /*Deployment*/
-//const wss = new WebSocket.Server({port:7700}); /*Testing*/
+const wss = new WebSocket.Server({ server }); // Production
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,50 +19,80 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Create chathouse folder if not exists
+// Create 'chathouse' folder if not exists
 if (!fs.existsSync("./chathouse")) {
   fs.mkdirSync("./chathouse");
 }
 
-// WebSocket logic
+// Handle new connections
 wss.on("connection", (ws) => {
+  console.log("🔌 Client connected");
+
+  // Send chat messages immediately
+  sendMessages(ws);
+
+  // Poll and send messages to this client every second
+  const intervalId = setInterval(() => {
+    sendMessages(ws);
+  }, 1000);
+
+  // When client sends a message
   ws.on("message", (message) => {
-  const msg = message.toString("utf8");
-  try {
-    const { messageContent: content, time: filename } = JSON.parse(msg);
-    console.log(content);
-
-    fs.writeFile(path.join("chathouse", filename), content, (err) => {
-      if (err) console.error(err);
-    });
-
-    console.log("Received:", msg);
-  } catch (err) {
-    console.error("Invalid message:", msg);
-  }
-});
-
-
-  async function send() {
     try {
-      const files = await fsPromises.readdir("./chathouse");
-      const filesCon = await Promise.all(
-        files.map(file => fsPromises.readFile(path.join("chathouse", file), "utf8"))
-      );
+      const msg = message.toString("utf8");
+      const { messageContent: content, time: filename } = JSON.parse(msg);
 
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(filesCon.join("|"));
-      }
+      fs.writeFile(path.join("chathouse", filename), content, (err) => {
+        if (err) console.error("❌ File write error:", err);
+      });
+
     } catch (err) {
-      console.error(err);
+      console.error("❌ Invalid message:", err.message);
     }
+  });
+
+  // When client disconnects
+  ws.on("close", () => {
+    console.log("❌ Client disconnected");
+    clearInterval(intervalId);
+    broadcastUserCount();
+  });
+
+  // Broadcast current user count after connection established
+  broadcastUserCount();
+});
+
+// Broadcast number of online users to all clients
+function broadcastUserCount() {
+  const clients = [...wss.clients].filter(client => client.readyState === WebSocket.OPEN);
+  const count = clients.length;
+  const msg = `USERS:${count}`;
+
+  clients.forEach(client => {
+    client.send(msg);
+  });
+
+  console.log(`📡 Broadcasted user count: ${count}`);
+}
+
+// Function to send all messages to a specific client
+async function sendMessages(ws) {
+  try {
+    const files = await fsPromises.readdir("./chathouse");
+    const messages = await Promise.all(
+      files.map(file => fsPromises.readFile(path.join("chathouse", file), "utf8"))
+    );
+
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(messages.join("|"));
+    }
+  } catch (err) {
+    console.error("❌ Error sending messages:", err.message);
   }
+}
 
-  send();
-  setInterval(send, 1000);
-});
-
-// Start combined HTTP + WebSocket server
+// Start the server
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
+
