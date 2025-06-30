@@ -28,38 +28,31 @@ if (!fs.existsSync("./chathouse")) {
 wss.on("connection", (ws) => {
   console.log("🔌 Client connected");
 
-  // Send chat messages immediately
-  sendMessages(ws);
+  // Send previous messages once when they join
+  sendMessageHistory(ws);
 
-  // Poll and send messages to this client every second
-  const intervalId = setInterval(() => {
-    sendMessages(ws);
-  }, 1000);
+  // Add to count
+  broadcastUserCount();
 
-  // When client sends a message
-  ws.on("message", (message) => {
+  ws.on("message", async (message) => {
     try {
       const msg = message.toString("utf8");
       const { messageContent: content, time: filename } = JSON.parse(msg);
 
-      fs.writeFile(path.join("chathouse", filename), content, (err) => {
-        if (err) console.error("❌ File write error:", err);
-      });
+      // Save message to file
+      await fsPromises.writeFile(path.join("chathouse", filename), content);
 
+      // Broadcast just this new message to everyone
+      broadcastNewMessage(content);
     } catch (err) {
-      console.error("❌ Invalid message:", err.message);
+      console.error("❌ Error handling message:", err.message);
     }
   });
 
-  // When client disconnects
   ws.on("close", () => {
     console.log("❌ Client disconnected");
-    clearInterval(intervalId);
     broadcastUserCount();
   });
-
-  // Broadcast current user count after connection established
-  broadcastUserCount();
 });
 
 // Broadcast number of online users to all clients
@@ -75,8 +68,17 @@ function broadcastUserCount() {
   console.log(`📡 Broadcasted user count: ${count}`);
 }
 
+// Helper function for sending new messages
+function broadcastNewMessage(message) {
+  const clients = [...wss.clients].filter(ws => ws.readyState === WebSocket.OPEN);
+  const msg = `NEW:${message}`;
+  clients.forEach(client => client.send(msg));
+}
+
+
+
 // Function to send all messages to a specific client
-async function sendMessages(ws) {
+async function sendMessageHistory(ws) {
   try {
     const files = await fsPromises.readdir("./chathouse");
     const messages = await Promise.all(
@@ -84,12 +86,13 @@ async function sendMessages(ws) {
     );
 
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(messages.join("|"));
+      ws.send(`HISTORY:${messages.join("|")}`);
     }
   } catch (err) {
-    console.error("❌ Error sending messages:", err.message);
+    console.error("❌ Error sending history:", err.message);
   }
 }
+
 
 // Start the server
 server.listen(PORT, () => {
