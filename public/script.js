@@ -14,24 +14,35 @@ let lastValue = "";
 ws.onmessage = (message) => {
   const data = message.data;
 
-  // 🟡 Handle online user count
   if (data.startsWith("USERS:")) {
     const count = data.split(":")[1];
     onlineCountElem.textContent = `Online: ${count}`;
     return;
   }
 
-  // 🟢 Handle chat messages
-  chatCanvas.innerHTML = "";
-  const msgArrLocal = data.split("|");
-  msgArrLocal.forEach((item) => {
-    const div = document.createElement("div");
-    div.id = "mess";
-    div.innerHTML = item;
-    chatCanvas.appendChild(div);
-  });
-  chatCanvas.scrollTop = chatCanvas.scrollHeight;
+  if (data.startsWith("HISTORY:")) {
+    chatCanvas.innerHTML = "";
+    const messages = data.replace("HISTORY:", "").split("|");
+    messages.forEach((msg) => appendMessage(msg));
+    return;
+  }
+
+  if (data.startsWith("NEW:")) {
+    const newMsg = data.replace("NEW:", "");
+    appendMessage(newMsg);
+    return;
+  }
 };
+
+// 🧱 Helper to append message
+function appendMessage(msg) {
+  const div = document.createElement("div");
+  div.id = "mess";
+  div.innerHTML = msg;
+  chatCanvas.appendChild(div);
+  chatCanvas.scrollTop = chatCanvas.scrollHeight;
+}
+
 
 
 
