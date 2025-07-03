@@ -39,18 +39,21 @@ wss.on("connection", (ws) => {
     const msg = message.toString("utf8");
     const { messageContent: content, time: filename, isFinal } = JSON.parse(msg);
 
-    // Save to file (overwrite)
-    await fsPromises.writeFile(path.join("chathouse", filename), content);
+    // Format message as HTML
+    const formatted = `<div class="chat-bubble">${content}</div>`;
 
-    // Broadcast only final messages
+    // Save formatted version
+    await fsPromises.writeFile(path.join("chathouse", filename), formatted);
+
     if (isFinal) {
-      broadcastNewMessage(content);
+      broadcastNewMessage(formatted);
     }
 
   } catch (err) {
     console.error("❌ Error handling message:", err.message);
   }
 });
+
 
 
   ws.on("close", () => {
