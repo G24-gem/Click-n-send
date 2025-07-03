@@ -1,6 +1,7 @@
 const inputElem = document.querySelector(".input");
 const submitElem = document.querySelector(".post-btn");
 const chatCanvas = document.querySelector(".post-container");
+const onlineCountElem = document.getElementById("online-count");
 
 const ws = new WebSocket(`wss://${location.host}`);/*Deployment*/
 //const ws = new WebSocket("ws://localhost:7700");/*Testing*/
