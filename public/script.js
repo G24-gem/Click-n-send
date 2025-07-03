@@ -3,30 +3,47 @@ const submitElem = document.querySelector(".post-btn");
 const chatCanvas = document.querySelector(".post-container");
 const onlineCountElem = document.getElementById("online-count");
 
-const ws = new WebSocket(`wss://${location.host}`); // Deployment
-// const ws = new WebSocket("ws://localhost:7700"); // Testing
-
-let timestamp = new Date().toISOString().replace(/:/g, "-");
+const ws = new WebSocket(`wss://${location.host}`);
+let draftTimestamp = null;
 let lastValue = "";
 
-// 📡 Poll input every 300ms for mobile compatibility
+// Start with a new draft ID (timestamp)
+function initDraft() {
+  draftTimestamp = new Date().toISOString().replace(/:/g, "-");
+}
+initDraft();
+
+// 🛰 Poll input every 300ms
 setInterval(() => {
   const currentValue = inputElem.value;
-  if (currentValue !== lastValue) {
+  if (currentValue !== lastValue && currentValue.trim() !== "") {
     lastValue = currentValue;
-    const msg = JSON.stringify({ messageContent: currentValue, time: timestamp });
+
+    const msg = JSON.stringify({
+  messageContent: currentValue,
+  time: draftTimestamp,
+  isFinal: false
+});
+
     ws.send(msg);
   }
 }, 300);
 
-// 🧹 Reset input & timestamp when "Post" button is clicked
+// 🧹 When user clicks "Post", submit final message and clear
 submitElem.addEventListener("click", () => {
+  const msg = JSON.stringify({
+    messageContent: inputElem.value,
+    time: draftTimestamp,
+    isFinal: true
+  });
+  ws.send(msg);
+
   inputElem.value = "";
   lastValue = "";
-  timestamp = new Date().toISOString().replace(/:/g, "-");
+  initDraft(); // new draft
 });
 
-// 📩 Append one message to screen
+// 📩 Append new messages
 function appendMessage(msg) {
   const div = document.createElement("div");
   div.id = "mess";
@@ -35,7 +52,7 @@ function appendMessage(msg) {
   chatCanvas.scrollTop = chatCanvas.scrollHeight;
 }
 
-// 🌐 Handle WebSocket messages
+// 🌐 Handle server responses
 ws.onmessage = (message) => {
   const data = message.data;
 
@@ -56,12 +73,5 @@ ws.onmessage = (message) => {
     const newMsg = data.replace("NEW:", "");
     appendMessage(newMsg);
     return;
-  }
-
-  // fallback (in case old format somehow comes)
-  if (data.includes("|")) {
-    chatCanvas.innerHTML = "";
-    const msgArrLocal = data.split("|");
-    msgArrLocal.forEach(appendMessage);
   }
 };
