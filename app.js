@@ -35,19 +35,23 @@ wss.on("connection", (ws) => {
   broadcastUserCount();
 
   ws.on("message", async (message) => {
-    try {
-      const msg = message.toString("utf8");
-      const { messageContent: content, time: filename } = JSON.parse(msg);
+  try {
+    const msg = message.toString("utf8");
+    const { messageContent: content, time: filename, isFinal } = JSON.parse(msg);
 
-      // Save message to file
-      await fsPromises.writeFile(path.join("chathouse", filename), content);
+    // Save to file (overwrite)
+    await fsPromises.writeFile(path.join("chathouse", filename), content);
 
-      // Broadcast just this new message to everyone
+    // Broadcast only final messages
+    if (isFinal) {
       broadcastNewMessage(content);
-    } catch (err) {
-      console.error("❌ Error handling message:", err.message);
     }
-  });
+
+  } catch (err) {
+    console.error("❌ Error handling message:", err.message);
+  }
+});
+
 
   ws.on("close", () => {
     console.log("❌ Client disconnected");
