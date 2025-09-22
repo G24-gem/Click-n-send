@@ -25,11 +25,11 @@ if (!fs.existsSync("./chathouse")) {
 }
 
 // Handle new connections
-wss.on("connection", (ws) => {
+wss.on("connection", async (ws) => {
   console.log("🔌 Client connected");
 
   // Send previous messages once when they join
-  sendMessageHistory(ws);
+  await sendMessageHistory(ws);
 
   // Add to count
   broadcastUserCount();
