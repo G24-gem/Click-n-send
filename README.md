@@ -11,3 +11,6 @@ git clone https://github.com/G24-gem/Click-n-send.git
 - Express.js
 - fs module (from node.js)
 - Vanilla JS
+### Deployment technology:
+- Render (Web Service)
+- Github
