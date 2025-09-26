@@ -4,6 +4,7 @@
 ### To clone!
 ```bash
 git clone https://github.com/G24-gem/Click-n-send.git
+```
 
 ## Technology used:
 - WebSockets
