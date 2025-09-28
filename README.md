@@ -24,3 +24,8 @@ Click-n-Send is a real-time messaging app that allows users to send messages as 
 - *Dynamic Conversation*: Recipients can see the message being typed, creating a more interactive conversation experience.
 - *Real-time Feedback*: Users can see when the recipient is typing, allowing for a more engaging and responsive conversation.
 
+### Benefits
+- *Enhanced Communication*: Click-n-Send enables users to communicate more effectively, with a more dynamic and interactive conversation experience.
+- *Increased Productivity*: Users can convey their thoughts and ideas in real-time, without waiting for the entire message to be composed.
+
+Gem is expert is not Ayoola the vibe coder
