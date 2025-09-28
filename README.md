@@ -14,3 +14,7 @@ git clone https://github.com/G24-gem/Click-n-send.git
 ### Deployment technology:
 - Render (Web Service)
 - Github
+
+## Elongated Description of the App
+Click-n-Send is a real-time messaging app that allows users to send messages as they type, without waiting for the entire message to be composed. The app provides a live typing experience, where the recipient can see the message being typed in real-time, creating a dynamic conversation experience.
+
